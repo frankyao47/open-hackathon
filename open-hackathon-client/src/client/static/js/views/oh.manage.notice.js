@@ -46,7 +46,7 @@
             if(data.error){
                 oh.comm.alert(data.error.message);
             }else{
-                var noticeDescriptionByType = {
+                var noticeDescriptionByCategory = {
                     0: '黑客松信息',
                     1: '用户信息',
                     2: '实验信息',
@@ -55,8 +55,8 @@
                 };
 
                 $('#hackathon_notice_list').empty().append($('#hackathon_notice_list_template').tmpl(data.items, {
-                    getNoticeDescription: function(type){
-                        return noticeDescriptionByType[type];
+                    getNoticeDescription: function(category){
+                        return noticeDescriptionByCategory[category];
                     }
                 }));
                 oh.comm.removeLoading();

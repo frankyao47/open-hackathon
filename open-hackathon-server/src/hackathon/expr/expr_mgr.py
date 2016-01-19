@@ -39,7 +39,7 @@ from sqlalchemy import and_
 
 from hackathon import Component, RequiredFeature, Context
 from hackathon.constants import EStatus, VERemoteProvider, VE_PROVIDER, PortBindingType, VEStatus, ReservedUser, \
-    AVMStatus, CLOUD_ECLIPSE, HACK_NOTICE_EVENT
+    AVMStatus, CLOUD_ECLIPSE, HACK_NOTICE_EVENT, HACK_NOTICE_CATEGORY
 from hackathon.database import VirtualEnvironment, DockerHostServer, Experiment, User, HackathonTemplateRel, \
     DockerContainer
 from hackathon.azureformation.azureFormation import AzureFormation

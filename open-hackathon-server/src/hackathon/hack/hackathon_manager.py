@@ -40,7 +40,7 @@ from hackathon.database import Hackathon, User, AdminHackathonRel, DockerHostSer
     UserTeamRel, HackathonNotice
 from hackathon.hackathon_response import internal_server_error, ok, not_found, forbidden
 from hackathon.constants import HACKATHON_BASIC_INFO, ADMIN_ROLE_TYPE, HACK_STATUS, RGStatus, HTTP_HEADER, \
-    FILE_TYPE, HACK_TYPE, HACKATHON_STAT, DockerHostServerStatus, HACK_NOTICE_TYPE, HACK_NOTICE_EVENT
+    FILE_TYPE, HACK_TYPE, HACKATHON_STAT, DockerHostServerStatus, HACK_NOTICE_CATEGORY, HACK_NOTICE_EVENT
 from hackathon import RequiredFeature, Component, Context
 
 docker_host_manager = RequiredFeature("docker_host_manager")
@@ -492,7 +492,7 @@ class HackathonManager(Component):
         hackathon_notice = self.db.get_object(HackathonNotice, notice_id)
         return hackathon_notice.dic()
 
-    def create_hackathon_notice(self, hackathon, body):
+    def create_hackathon_notice(self, hackathon_id, body):
         return self.__create_hackathon_notice(hackathon, body.get('event', HACK_NOTICE_EVENT.MANUAL), body)
 
     def update_hackathon_notice(self, hackathon, body):
@@ -517,12 +517,12 @@ class HackathonManager(Component):
         query = HackathonNotice.query
 
         hackathon_name = body.get("hackathon_name")
-        notice_type = body.get("type")
+        notice_category = body.get("category")
         notice_event = body.get("event")
         order_by = body.get("order_by", "time") 
         show = body.get("show")
 
-        #filter by hackathon_name, type or event
+        #filter by hackathon_name, category or event
         if hackathon_name:
             hackathon = self.get_hackathon_by_name(hackathon_name)
             if hackathon:
@@ -530,15 +530,15 @@ class HackathonManager(Component):
             else:
                 return []
         if notice_type:
-            query = query.filter(HackathonNotice.type == int(notice_type))
+            query = query.filter(HackathonNotice.category == int(notice_category))
         if notice_event:
             query = query.filter(HackathonNotice.event == int(notice_event))
 
-        #order by time or type
+        #order by time or category
         if order_by == 'time':
             query = query.order_by(HackathonNotice.update_time.desc())
-        elif order_by == 'type':
-            query = query.order_by(HackathonNotice.type)
+        elif order_by == 'category':
+            query = query.order_by(HackathonNotice.category)
         elif order_by == 'event':
             query = query.order_by(HackathonNotice.event)
         else:
@@ -850,9 +850,9 @@ class HackathonManager(Component):
 
         # every event belongs to a specific type, which influences the icons/descriptions of the notice shown at front-end
         if notice_event in [HACK_NOTICE_EVENT.EXPR_JOIN]:
-            hackathon_notice.type = HACK_NOTICE_TYPE.EXPERIMENT
+            hackathon_notice.type = HACK_NOTICE_CATEGORY.EXPERIMENT
         else:
-            hackathon_notice.type = HACK_NOTICE_TYPE.HACKATHON
+            hackathon_notice.type = HACK_NOTICE_CATEGORY.HACKATHON
 
         self.db.add_object(hackathon_notice)
 

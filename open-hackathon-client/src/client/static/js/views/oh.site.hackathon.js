@@ -136,7 +136,7 @@
                 data = data.items;
                 $('#new > span').text('（' + data.length + '）');
 
-                var noticeIconByType = {
+                var noticeIconByCategory = {
                     0: 'glyphicon glyphicon-bullhorn', //'黑客松信息'
                     1: 'glyphicon glyphicon-user', //'用户信息'
                     2: 'glyphicon glyphicon-th-list', //'实验信息'
@@ -145,8 +145,8 @@
                 };
 
                 $('#oh-latest-news').append($('#notice_list_temp').tmpl(data, {
-                    getNoticeIcon: function(type) {
-                        return noticeIconByType[type];
+                    getNoticeIcon: function(category) {
+                        return noticeIconByCategory[category];
                     }, 
                     getNoticeTime: function(update_time) {
                         var current_time = new Date().getTime();
