@@ -20,11 +20,6 @@
             "type": "string",
             "required": false
           },
-          "show": {
-            "description": "show all hackathon_notices or use pagination",
-            "type": "string",
-            "required": false
-          },
           "page": {
             "description": "page number, start from 1",
             "pattern": "^[0-9]+$",

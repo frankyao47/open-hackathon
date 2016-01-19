@@ -545,20 +545,15 @@ class HackathonManager(Component):
             query = query.order_by(HackathonNotice.update_time.desc())
 
         #return all notices or use pagination
-        if show == 'pagination':
-            page = int(body.get("page", 1))
-            per_page = int(body.get("per_page", 10))
-            pagination = self.db.paginate(query, page, per_page)
+        page = int(body.get("page", 1))
+        per_page = int(body.get("per_page", 1000))
+        pagination = self.db.paginate(query, page, per_page)
 
-            def func(hackathon_notice):
-                detail = hackathon_notice.dic()
-                return detail
+        def func(hackathon_notice):
+            detail = hackathon_notice.dic()
+            return detail
 
-            return self.util.paginate(pagination, func)    
-        else:
-            hackathon_notice = {}
-            hackathon_notice['items'] = [a.dic() for a in query]
-            return hackathon_notice
+        return self.util.paginate(pagination, func)    
 
 
     def schedule_pre_allocate_expr_job(self):

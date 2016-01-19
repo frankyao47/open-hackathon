@@ -54,7 +54,6 @@
         oh.api.hackathon.notice.list.get({
             query: {
                 order_by: 'time',
-                show: 'pagination',
                 page: 1,
                 per_page: 6 //the latest 6 notices are shown
             }
