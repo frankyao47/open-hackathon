@@ -131,12 +131,12 @@
             }
         }, function(data) {
             if(data.error) {
-                alert(data.error.message);
+                oh.comm.alert(data.error.message);
             } else {
                 data = data.items;
                 getNoticeIcon(data);
                 getNoticeTime(data);
-                $('#new > span').html('（' + data.length + '）');
+                $('#new > span').text('（' + data.length + '）');
                 $('#oh-latest-news').append($('#notice_list_temp').tmpl(data));
             }
         });

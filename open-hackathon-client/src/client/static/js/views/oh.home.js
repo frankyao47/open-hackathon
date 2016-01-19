@@ -60,7 +60,7 @@
             }
         }, function(data) {
             if(data.error) {
-                alert(data.error.message);
+                oh.comm.alert(data.error.message);
             } else if(data.items.length > 0) {
                 data = data.items;
                 //order: last', first, second, ..., last, first'
@@ -94,12 +94,7 @@
 
                 // automatically rolling notice
                 setInterval(function() {
-                    firstNotice.stop(true, true).animate({"margin-top": "-=" + noticeHeight + "px"}, 500, function() {
-                        var marginVal = parseInt(firstNotice.css("margin-top").slice(0, -2));
-                        if(marginVal == minMarginTopVal) {
-                            firstNotice.css({"margin-top": (maxMarginTopVal-noticeHeight) + "px"});
-                        }
-                    });
+                    $('#btn-notice-up').trigger('click');
                 }, 5000);
                 
             } else { //no notice

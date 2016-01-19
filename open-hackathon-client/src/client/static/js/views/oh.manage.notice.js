@@ -59,7 +59,7 @@
             }
         }, function(data) {
             if(data.error){
-                alert(data.error.message);
+                oh.comm.alert(data.error.message);
             }else{
                 getNoticeDescription(data.items);
                 $('#hackathon_notice_list').empty().append($('#hackathon_notice_list_template').tmpl(data.items));
@@ -81,7 +81,7 @@
             }
         }, function(data) {
             if(data.error){
-                alert(data.error.message);
+                oh.comm.alert(data.error.message);
             }else{
                 toggleTable(0);
                 oh.comm.alert('提示', '发布成功');
@@ -98,7 +98,7 @@
             }
         }, function(data) {
             if(data.error){
-                alert(data.error.message);
+                oh.comm.alert(data.error.message);
             }else{
                 oh.comm.alert('提示', '更新成功');
             }
@@ -114,16 +114,11 @@
             }
         }, function(data) {
             if(data.error){
-                alert(data.error.message);
+                oh.comm.alert(data.error.message);
             }else{
                 oh.comm.alert('提示', '删除成功');
             }
         });
-    }
-
-    function clearHackathonNoticeVal() {
-        $('#add_notice_content').val('');
-        $('#add_notice_link').val('');
     }
 
     function setUpdateHackathonNotice(data) {
@@ -146,8 +141,8 @@
         });
 
         $('[data-type="new"]').click(function(e){
-            clearHackathonNoticeVal();
             toggleTable(1);
+            $('#hackathon_notice_add_form').data().bootstrapValidator.resetForm();
         });
 
         $('[data-type="cancel"]').click(function(e){
