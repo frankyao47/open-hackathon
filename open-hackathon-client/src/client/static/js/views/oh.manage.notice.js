@@ -25,21 +25,6 @@
 (function($, oh) {
     var currentHackathon = oh.comm.getCurrentHackathon();
 
-    function getNoticeDescription(items) {
-        var noticeDescriptionByType = {
-            0: '黑客松信息',
-            1: '用户信息',
-            2: '实验信息',
-            3: '获奖信息',
-            4: '模板信息'
-        }
-
-        var length = items.length;
-        for(var i = 0; i < length; ++i) {
-            items[i].type = noticeDescriptionByType[items[i].type];
-        }
-    }
-
     function toggleTable(status){
         if(status == 0){
             $('#hackathon_notice_list_table').show();
@@ -61,8 +46,19 @@
             if(data.error){
                 oh.comm.alert(data.error.message);
             }else{
-                getNoticeDescription(data.items);
-                $('#hackathon_notice_list').empty().append($('#hackathon_notice_list_template').tmpl(data.items));
+                var noticeDescriptionByType = {
+                    0: '黑客松信息',
+                    1: '用户信息',
+                    2: '实验信息',
+                    3: '获奖信息',
+                    4: '模板信息'
+                };
+
+                $('#hackathon_notice_list').empty().append($('#hackathon_notice_list_template').tmpl(data.items, {
+                    getNoticeDescription: function(type){
+                        return noticeDescriptionByType[type];
+                    }
+                }));
                 oh.comm.removeLoading();
             }
         });
@@ -129,8 +125,15 @@
     function init(){
         getHackathonNotices();
         toggleTable(0);
-        $('#hackathon_notice_update_form').bootstrapValidator({
-            submitButtons: 'button[data-type="submit"]'
+        $('#hackathon_notice_update_form').bootstrapValidator().on('success.form.bv', function (e) {
+            e.preventDefault();
+            var data = updateHackathonNoticeModal.data('list').data('tmplItem').data;
+            setUpdateHackathonNotice(data);
+            updateHackathonNotice(data).then(function(){
+                getHackathonNotices();
+            });
+
+            updateHackathonNoticeModal.modal('hide');
         });
 
         $('#hackathon_notice_add_form').bootstrapValidator().on('success.form.bv', function (e) {
@@ -151,7 +154,7 @@
 
         var deleteHackathonNoticeModal = $('#hackathon_notice_delete_modal').on('show.bs.modal',function(e){
             deleteHackathonNoticeModal.data({list: $(e.relatedTarget).parents('tr') });
-            
+
         }).on('click','[data-type="ok"]',function(e){
             var data = deleteHackathonNoticeModal.data('list').data('tmplItem').data;
             deleteHackathonNotice(data.id).then(function(){
@@ -167,15 +170,6 @@
             $('#update_notice_content').val(data.content);
             $('#update_notice_link').val(data.link);
 
-        }).on('click','[data-type="submit"]',function(e){
-            e.preventDefault();
-            var data = updateHackathonNoticeModal.data('list').data('tmplItem').data;
-            setUpdateHackathonNotice(data);
-            updateHackathonNotice(data).then(function(){
-                getHackathonNotices();
-            });
-
-            updateHackathonNoticeModal.modal('hide');
         });
 
     }

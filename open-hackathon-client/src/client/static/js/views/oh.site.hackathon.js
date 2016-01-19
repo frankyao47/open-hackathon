@@ -135,16 +135,17 @@
             } else {
                 data = data.items;
                 $('#new > span').text('（' + data.length + '）');
+
+                var noticeIconByType = {
+                    0: 'glyphicon glyphicon-bullhorn', //'黑客松信息'
+                    1: 'glyphicon glyphicon-user', //'用户信息'
+                    2: 'glyphicon glyphicon-th-list', //'实验信息'
+                    3: 'glyphicon glyphicon-gift', //'获奖信息'
+                    4: 'glyphicon glyphicon-edit' //'模板信息'
+                };
+
                 $('#oh-latest-news').append($('#notice_list_temp').tmpl(data, {
                     getNoticeIcon: function(type) {
-                        var noticeIconByType = {
-                            0: 'glyphicon glyphicon-bullhorn', //'黑客松信息'
-                            1: 'glyphicon glyphicon-user', //'用户信息'
-                            2: 'glyphicon glyphicon-th-list', //'实验信息'
-                            3: 'glyphicon glyphicon-gift', //'获奖信息'
-                            4: 'glyphicon glyphicon-edit' //'模板信息'
-                        };
-                        
                         return noticeIconByType[type];
                     }, 
                     getNoticeTime: function(update_time) {
