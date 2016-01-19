@@ -150,9 +150,10 @@
         });
 
         var deleteHackathonNoticeModal = $('#hackathon_notice_delete_modal').on('show.bs.modal',function(e){
-            list = $(e.relatedTarget).parents('tr');
+            deleteHackathonNoticeModal.data({list: $(e.relatedTarget).parents('tr') });
+            
         }).on('click','[data-type="ok"]',function(e){
-            var data = list.data('tmplItem').data;
+            var data = deleteHackathonNoticeModal.data('list').data('tmplItem').data;
             deleteHackathonNotice(data.id).then(function(){
                 getHackathonNotices();
             });
@@ -161,14 +162,14 @@
         });
 
         var updateHackathonNoticeModal = $('#hackathon_notice_update_modal').on('show.bs.modal',function(e){
-            list = $(e.relatedTarget).parents('tr');
-            var data = list.data('tmplItem').data;
+            updateHackathonNoticeModal.data({list: $(e.relatedTarget).parents('tr') });
+            var data = updateHackathonNoticeModal.data('list').data('tmplItem').data;
             $('#update_notice_content').val(data.content);
             $('#update_notice_link').val(data.link);
 
-            
         }).on('click','[data-type="submit"]',function(e){
-            var data = list.data('tmplItem').data;
+            e.preventDefault();
+            var data = updateHackathonNoticeModal.data('list').data('tmplItem').data;
             setUpdateHackathonNotice(data);
             updateHackathonNotice(data).then(function(){
                 getHackathonNotices();
