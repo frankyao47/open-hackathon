@@ -492,7 +492,7 @@ class HackathonManager(Component):
         hackathon_notice = self.db.get_object(HackathonNotice, notice_id)
         return hackathon_notice.dic()
 
-    def create_hackathon_notice(self, hackathon_id, body):
+    def create_hackathon_notice(self, hackathon, body):
         return self.__create_hackathon_notice(hackathon, body.get('event', HACK_NOTICE_EVENT.MANUAL), body)
 
     def update_hackathon_notice(self, hackathon, body):
@@ -529,7 +529,7 @@ class HackathonManager(Component):
                 query = query.filter(HackathonNotice.hackathon_id == hackathon.id)
             else:
                 return []
-        if notice_type:
+        if notice_category:
             query = query.filter(HackathonNotice.category == int(notice_category))
         if notice_event:
             query = query.filter(HackathonNotice.event == int(notice_event))

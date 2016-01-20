@@ -340,7 +340,7 @@ class HackathonNotice(DBBase):
     related_id = Column(Integer)
     link = Column(Text)
 
-    creator_id = Column(Integer, ForeignKey('creator.id', ondelete='CASCADE'))
+    creator_id = Column(Integer, ForeignKey('user.id', ondelete='CASCADE'))
     creator = relationship('User', backref=backref('notices', lazy='dynamic'))
 
     hackathon_id = Column(Integer, ForeignKey('hackathon.id', ondelete='CASCADE'))
