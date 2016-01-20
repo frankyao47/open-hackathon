@@ -252,7 +252,7 @@ class HackathonManager(Component):
         if self.util.is_local():
             self.__create_default_data_for_local(new_hack)
 
-        self.__create_hackathon_notice(new_hack, HACK_NOTICE_EVENT.HACK_CREATE)
+        self.create_hackathon_notice(new_hack.id, HACK_NOTICE_EVENT.HACK_CREATE, HACK_NOTICE_CATEGORY.HACKATHON)
 
         return new_hack.dic()
 
@@ -273,7 +273,7 @@ class HackathonManager(Component):
 
             if update_items:
                 if 'status' in update_items and int(update_items['status']) == HACK_STATUS.ONLINE:
-                    self.__create_hackathon_notice(hackathon, HACK_NOTICE_EVENT.HACK_ONLINE) #hackathon online
+                    self.create_hackathon_notice(hackathon.id, HACK_NOTICE_EVENT.HACK_ONLINE, HACK_NOTICE_CATEGORY.HACKATHON) #hackathon online
                 else:
                     pass #other hackathon properties changes
 
@@ -494,20 +494,23 @@ class HackathonManager(Component):
 
     def create_hackathon_notice(self, hackathon_id, notice_event, notice_category, body={}):
         """
-        create hackathon notice
+        create hackathon notice with hackathon_id, notice_event, notice_category. 
+        notice 'content' and 'link' can be included in body (optional)
+
         :type hackathon_id: int
         :param hackathon_id: id of hackathon that the notice belongs to (-1 if the notice doesn't belong to a specfic hackathon)
 
         :type notice_event: Class HACK_NOTICE_EVENT
-        :param notice_event: specfic event that the notice is triggered by, can be used for notice filtering (see get_hackathon_notice_list())
-                             more specfic than notice_category
+        :param notice_event: event that the notice is triggered by, used for notice filtering (see get_hackathon_notice_list())
+                             more specfic than notice_category, new events can be added without disturbing front-end code
 
         :type notice_category: Class HACK_NOTICE_CATEGORY
-        :param notice_category: specfic category that the notice belongs to, can be used for notice filtering and notice properties control 
-                                at front-end (e.g. icons/descriptions display, see oh.manage.notice.js & oh.site.hackathon.js), more general than 
-                                notice_event, if you want to add a new category in HACK_NOTICE_CATEGORY, remember to update at front-end as well.
+        :param notice_category: category that the notice belongs to, used for notice filtering and notice properties display 
+                                at front-end (e.g. icons/descriptions, see oh.manage.notice.js & oh.site.hackathon.js), 
+                                more general than notice_event, if you want to add a new category in HACK_NOTICE_CATEGORY, 
+                                remember to update front-end js code as well.
                                 
-        :type body: dict
+        :type body: dict, default value: {}
         :param body: other necessary information, e.g.: 'content'(notice's content), 'link'(notice's link), other keys for specfic uses
 
         :return: hackathon_notice in dict
@@ -522,14 +525,14 @@ class HackathonManager(Component):
             and description is determined by HACK_NOTICE_CATEGORY.yy, while its content and link url is ''
         """
         hackathon_notice = HackathonNotice(hackathon_id=hackathon_id, 
-                                           content=body.get('content', ''),
-                                           link=body.get('link', ''),
+                                           content='',
+                                           link='',
                                            event=notice_event,
                                            category=notice_category,
                                            create_time=self.util.get_now(),
                                            update_time=self.util.get_now())
 
-        hackathon = get_hackathon_by_id(hackathon_id)
+        hackathon = self.get_hackathon_by_id(hackathon_id)
         #notice creation logic for different notice_events
         if hackathon:
             if notice_event == HACK_NOTICE_EVENT.HACK_CREATE:
@@ -549,6 +552,10 @@ class HackathonManager(Component):
                 hackathon_notice.content = u"用户 %s 开始编程" %(user.nickname)
             else:
                 pass
+
+        #use assigned value if content or link is assigned in body
+        hackathon_notice.content = body.get('content', hackathon_notice.content)
+        hackathon_notice.link = body.get('link', hackathon_notice.link)
 
         self.db.add_object(hackathon_notice)
 
