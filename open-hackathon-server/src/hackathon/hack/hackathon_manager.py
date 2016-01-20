@@ -510,7 +510,7 @@ class HackathonManager(Component):
                                 more general than notice_event, if you want to add a new category in HACK_NOTICE_CATEGORY, 
                                 remember to update front-end js code as well.
                                 
-        :type body: dict, default value: {}
+        :type body: dict/Context, default value: {}
         :param body: other necessary information, e.g.: 'content'(notice's content), 'link'(notice's link), other keys for specfic uses
 
         :return: hackathon_notice in dict
@@ -579,13 +579,38 @@ class HackathonManager(Component):
         return ok()
 
     def get_hackathon_notice_list(self, body):
+        """
+        list hackathon notices, notices are paginated, can be filtered by hackathon_name, event and category, 
+        can be ordered by update_time, event and category.
+
+        :type body: Context
+        :param body: valid key/values(all key/values are optional)
+            body = {
+                hackathon_name: string,                  // filter by hackathon_name, default unfiltered
+                category: 'int[,int...]',                // filter by category, default unfiltered
+                event: 'int[,int...]',                   // filter by event, default unfiltered
+                order_by: 'time' | 'event' | 'category', // order by update_time, event, category, default by time
+                page: int,                               // page number after pagination, start from 1, default 1
+                per_page: int                            // items per page, default 1000
+            }
+
+        :return: json style text, see util.Utility
+
+        ::Example:
+        : body = { order_by: 'time', category: '1,2,3', page: 1, per_page: 6 }
+            search first 6 notices ordered by time, filtered by: category in [1,2,3]
+        : body = { hackathon_name: 'hackathon', event: '1', order_by: 'event' }
+            search first 1000 notices ordered by event, filtered by event == 1 and hackathon_name == 'hackathon'
+        """
+
         query = HackathonNotice.query
 
         hackathon_name = body.get("hackathon_name")
         notice_category = body.get("category")
         notice_event = body.get("event")
         order_by = body.get("order_by", "time") 
-        show = body.get("show")
+        page = int(body.get("page", 1))
+        per_page = int(body.get("per_page", 1000))
 
         #filter by hackathon_name, category or event
         if hackathon_name:
@@ -593,13 +618,15 @@ class HackathonManager(Component):
             if hackathon:
                 query = query.filter(HackathonNotice.hackathon_id == hackathon.id)
             else:
-                return []
+                return not_found("hackathon_name not found")
         if notice_category:
-            query = query.filter(HackathonNotice.category == int(notice_category))
+            notice_category_tuple = tuple([int(category) for category in notice_category.split(',')])
+            query = query.filter(HackathonNotice.category.in_(notice_category_tuple))
         if notice_event:
-            query = query.filter(HackathonNotice.event == int(notice_event))
+            notice_event_tuple = tuple([int(event) for event in notice_event.split(',')])
+            query = query.filter(HackathonNotice.event.in_(notice_event_tuple))
 
-        #order by time or category
+        #order by time, category or event
         if order_by == 'time':
             query = query.order_by(HackathonNotice.update_time.desc())
         elif order_by == 'category':
@@ -609,9 +636,6 @@ class HackathonManager(Component):
         else:
             query = query.order_by(HackathonNotice.update_time.desc())
 
-        #return all notices or use pagination
-        page = int(body.get("page", 1))
-        per_page = int(body.get("per_page", 1000))
         pagination = self.db.paginate(query, page, per_page)
 
         def func(hackathon_notice):
