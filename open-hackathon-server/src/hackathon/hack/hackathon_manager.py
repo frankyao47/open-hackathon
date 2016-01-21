@@ -545,13 +545,13 @@ class HackathonManager(Component):
                 hackathon_notice.content = u"Hachathon: %s 下线" %(hackathon.name)
             else:
                 pass
+
+        if notice_event == HACK_NOTICE_EVENT.EXPR_JOIN and body.get('user_id'):
+            user_id = int(body.get('user_id'))
+            user = self.user_manager.get_user_by_id(user_id)
+            hackathon_notice.content = u"用户 %s 开始编程" %(user.nickname)
         else:
-            if notice_event == HACK_NOTICE_EVENT.EXPR_JOIN and args.get('user_id'):
-                user_id = int(args.get('user_id'))
-                user = self.user_manager.get_user_by_id(user_id)
-                hackathon_notice.content = u"用户 %s 开始编程" %(user.nickname)
-            else:
-                pass
+            pass
 
         #use assigned value if content or link is assigned in body
         hackathon_notice.content = body.get('content', hackathon_notice.content)
