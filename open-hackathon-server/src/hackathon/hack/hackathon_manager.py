@@ -93,7 +93,9 @@ class HackathonManager(Component):
         if not name:
             return None
 
-        return self.db.find_first_object_by(Hackathon, name=name)
+        # return self.db.find_first_object_by(Hackathon, name=name)
+        return Hackathon.objects().no_dereference().first()
+
 
     def get_hackathon_by_id(self, hackathon_id):
         """Query hackathon by id
@@ -719,10 +721,10 @@ class HackathonManager(Component):
         """Return hackathon info as well as its details including configs, stat, organizers, like if user logon"""
         detail = hackathon.dic()
 
-        detail["config"] = self.__get_hackathon_configs(hackathon)
-        detail["stat"] = self.get_hackathon_stat(hackathon)
-        detail["tag"] = self.get_hackathon_tags(hackathon)
-        detail["organizer"] = self.__get_hackathon_organizers(hackathon)
+        # detail["config"] = self.__get_hackathon_configs(hackathon)
+        # detail["stat"] = self.get_hackathon_stat(hackathon)
+        # detail["tag"] = self.get_hackathon_tags(hackathon)
+        # detail["organizer"] = self.__get_hackathon_organizers(hackathon)
 
         if user:
             detail["user"] = self.user_manager.user_display_info(user)
@@ -758,15 +760,56 @@ class HackathonManager(Component):
         :return hackathon instance
         """
 
+        # new_hack = Hackathon(
+        #     name=context.name,
+        #     display_name=context.display_name,
+        #     ribbon=context.get("ribbon"),
+        #     description=context.get("description"),
+        #     short_description=context.get("short_description"),
+        #     banners=context.get("banners"),
+        #     status=HACK_STATUS.INIT,
+        #     creator_id=g.user.id,
+        #     event_start_time=context.get("event_start_time"),
+        #     event_end_time=context.get("event_end_time"),
+        #     registration_start_time=context.get("registration_start_time"),
+        #     registration_end_time=context.get("registration_end_time"),
+        #     judge_start_time=context.get("judge_start_time"),
+        #     judge_end_time=context.get("judge_end_time"),
+        #     type=context.get("type", HACK_TYPE.HACKATHON)
+        # )
+
+        # # basic xss prevention
+        # if new_hack.description:  # case None type
+        #     new_hack.description = self.cleaner.clean_html(new_hack.description)
+
+        # # insert into table hackathon
+        # self.db.add_object(new_hack)
+
+        # # add the current login user as admin and creator
+        # try:
+        #     ahl = AdminHackathonRel(user_id=g.user.id,
+        #                             role_type=ADMIN_ROLE_TYPE.ADMIN,
+        #                             hackathon_id=new_hack.id,
+        #                             status=HACK_STATUS.INIT,
+        #                             remarks='creator',
+        #                             create_time=self.util.get_now())
+        #     self.db.add_object(ahl)
+        # except Exception as ex:
+        #     # TODO: send out a email to remind administrator to deal with this problems
+        #     self.log.error(ex)
+        #     raise InternalServerError("fail to create the default administrator")
+
+        # return new_hack
+
         new_hack = Hackathon(
             name=context.name,
             display_name=context.display_name,
             ribbon=context.get("ribbon"),
             description=context.get("description"),
             short_description=context.get("short_description"),
-            banners=context.get("banners"),
+            banners=context.get("banners"), #tochange
             status=HACK_STATUS.INIT,
-            creator_id=g.user.id,
+            creator_id=g.user, #tochange
             event_start_time=context.get("event_start_time"),
             event_end_time=context.get("event_end_time"),
             registration_start_time=context.get("registration_start_time"),
@@ -781,23 +824,25 @@ class HackathonManager(Component):
             new_hack.description = self.cleaner.clean_html(new_hack.description)
 
         # insert into table hackathon
-        self.db.add_object(new_hack)
+        new_hack.save()
 
         # add the current login user as admin and creator
-        try:
-            ahl = AdminHackathonRel(user_id=g.user.id,
-                                    role_type=ADMIN_ROLE_TYPE.ADMIN,
-                                    hackathon_id=new_hack.id,
-                                    status=HACK_STATUS.INIT,
-                                    remarks='creator',
-                                    create_time=self.util.get_now())
-            self.db.add_object(ahl)
-        except Exception as ex:
-            # TODO: send out a email to remind administrator to deal with this problems
-            self.log.error(ex)
-            raise InternalServerError("fail to create the default administrator")
+        '''AdminHackathonRel in mongoDB?'''
+        # try:
+        #     ahl = AdminHackathonRel(user_id=g.user.id,
+        #                             role_type=ADMIN_ROLE_TYPE.ADMIN,
+        #                             hackathon_id=new_hack.id,
+        #                             status=HACK_STATUS.INIT,
+        #                             remarks='creator',
+        #                             create_time=self.util.get_now())
+        #     self.db.add_object(ahl)
+        # except Exception as ex:
+        #     # TODO: send out a email to remind administrator to deal with this problems
+        #     self.log.error(ex)
+        #     raise InternalServerError("fail to create the default administrator")
 
         return new_hack
+
 
     def __get_pre_allocate_interval(self, hackathon):
         interval = self.get_basic_property(hackathon, HACKATHON_BASIC_INFO.PRE_ALLOCATE_INTERVAL_SECONDS)
