@@ -270,6 +270,14 @@ angular.module('oh.controllers', [])
 
     $scope.activitySubmit = function() {
       $scope.activityForm.disabled = true;
+      var tags = [];
+      angular.forEach($scope.tags, function(obj, index) {
+        tags.push(obj.text);
+      });
+      $scope.activity.tags = tags;
+      $scope.activity.config = $scope.configs;
+      $scope.activity.location = $scope.configs.location;
+
       api.admin.hackathon.post({
         body: $scope.activity
       }, function(data) {
@@ -284,43 +292,9 @@ angular.module('oh.controllers', [])
           }
           $scope.activityForm.disabled = false;
         } else {
-          api.admin.hackathon.config.post({
-            header: {
-              hackathon_name: $scope.activity.name
-            },
-            body: getConfigs()
-          }).then(function(data) {
-            if (data.error) {
-              $scope.$emit('showTip', {
-                level: 'tip-danger',
-                content: data.error.friendly_message
-              });
-              $scope.activityForm.disabled = false;
-            } else {
-              var tags = [];
-              angular.forEach($scope.tags, function(obj, index) {
-                tags.push(obj.text);
-              })
-              api.admin.hackathon.tags.post({
-                header: {
-                  hackathon_name: $scope.activity.name
-                },
-                body: tags
-              }).then(function(data) {
-                if (data.error) {
-                  $scope.$emit('showTip', {
-                    level: 'tip-danger',
-                    content: data.error.friendly_message
-                  });
-                } else {
-                  $scope.wizard = 2;
-
-                }
-                $scope.activityForm.disabled = false;
-              });
-            }
-          });
+          $scope.wizard = 2;
         }
+        scope.activityForm.disabled = false;
       });
     };
 

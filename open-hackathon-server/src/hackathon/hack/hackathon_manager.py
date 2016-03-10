@@ -548,7 +548,6 @@ class HackathonManager(Component):
             and description is determined by HACK_NOTICE_CATEGORY.yy, while its content and link url is ''
         """
         hackathon_notice = HackathonNotice(content='',
-                                           link='',
                                            event=notice_event,
                                            category=notice_category)
 
@@ -580,10 +579,10 @@ class HackathonManager(Component):
         hackathon_notice.content = body.get('content', hackathon_notice.content)
         hackathon_notice.link = body.get('link', hackathon_notice.link)
 
-        hackathon_notice.save()
+        hackathon_notice.save(validate=False)
 
-        self.log.debug("a new notice is created: hackathon_id: %d, event: %d, category: %d" % (
-            hackathon_id, notice_event, notice_category))
+        self.log.debug("a new notice is created: hackathon_name: %s, event: %d, category: %d" % (
+            hackathon.name, notice_event, notice_category))
         return hackathon_notice.dic()
 
     def update_hackathon_notice(self, body):

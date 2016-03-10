@@ -44,6 +44,7 @@ def make_serializable(item):
         return item
     elif isinstance(item, datetime):
         epoch = datetime.utcfromtimestamp(0)
+        item = item.replace(tzinfo=None)
         return long((item - epoch).total_seconds() * 1000)
     elif isinstance(item, ObjectId) or isinstance(item, UUID):
         return str(item)
