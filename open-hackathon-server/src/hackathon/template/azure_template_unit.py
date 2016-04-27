@@ -45,7 +45,67 @@ class AzureTemplateUnit(TemplateUnit):
 
     def __init__(self, virtual_environment):
         super(AzureTemplateUnit, self).__init__(VE_PROVIDER.AZURE)
-        self.virtual_environment = virtual_environment
+        #self.virtual_environment = virtual_environment
+        
+        self.virtual_environment = load_default_config()
+        for key, value in virtual_environment.iteritems():
+            self.virtual_environment[key] = value
+
+
+    def load_default_config(self):
+        dic = {
+            AZURE_UNIT.CONTAINER: "vhds",
+            AZURE_UNIT.ROLE_SIZE: "Small",
+            AZURE_UNIT.CLOUD_SERVICE: { 
+                AZURE_UNIT.CLOUD_SERVICE_SERVICE_NAME: "ohp-win2016", 
+                AZURE_UNIT.CLOUD_SERVICE_LOCATION: "China East", 
+                AZURE_UNIT.CLOUD_SERVICE_LABEL: "ohp-win2016" 
+            },
+            AZURE_UNIT.IMAGE: { 
+                AZURE_UNIT.IMAGE_TYPE: "os",
+                AZURE_UNIT.IMAGE_NAME: "55bc2b193643443bb879a78bda516fc8__WindowsServerCore_en-us_TP4_Container_Azure-20151118.vhd" 
+            },
+            AZURE_UNIT.REMOTE_PROVIDER: "1",
+            AZURE_UNIT.LABEL: "ohp-win2016",
+            AZURE_UNIT.SYSTEM_CONFIG: {
+                AZURE_UNIT.SYSTEM_CONFIG_USER_NAME: "opentech",
+                AZURE_UNIT.SYSTEM_CONFIG_USER_PASSWORD: "Password01!",
+                AZURE_UNIT.SYSTEM_CONFIG_OS_FAMILY: "Windows",
+                AZURE_UNIT.SYSTEM_CONFIG_HOST_NAME: "hostname"
+            },
+            AZURE_UNIT.ROLE_NAME: "ohp-win2016",
+            AZURE_UNIT.DEPLOYMENT: {
+                AZURE_UNIT.DEPLOYMENT_DEPLOYMENT_SLOT: "production",
+                AZURE_UNIT.DEPLOYMENT_DEPLOYMENT_NAME: "ohp-win2016"
+            },
+            AZURE_UNIT.STORAGE_ACCOUNT: {
+                AZURE_UNIT.STORAGE_ACCOUNT_SERVICE_NAME: "ohpvhds",
+                AZURE_UNIT.STORAGE_ACCOUNT_LOCATION: "China East",
+                AZURE_UNIT.STORAGE_ACCOUNT_URL_BASE: "blob.core.chinacloudapi.cn",
+                AZURE_UNIT.STORAGE_ACCOUNT_DESCRIPTION: "storage-description",
+                AZURE_UNIT.STORAGE_ACCOUNT_LABEL: "storage-label"
+            },
+            AZURE_UNIT.REMOTE: {
+                AZURE_UNIT.REMOTE_INPUT_ENDPOINT_NAME: "remote",
+                AZURE_UNIT.REMOTE_PROTOCOL: "rdp",
+                AZURE_UNIT.REMOTE_PROVIDER: "guacamole"
+            },
+            AZURE_UNIT.NETWORK_CONFIG: {
+                AZURE_UNIT.NETWORK_CONFIG_INPUT_ENDPOINTS: [{
+                    AZURE_UNIT.NETWORK_CONFIG_INPUT_ENDPOINTS_URL: "http://{0}:{1}",
+                    AZURE_UNIT.NETWORK_CONFIG_INPUT_ENDPOINTS_PROTOCOL: "tcp",
+                    AZURE_UNIT.NETWORK_CONFIG_INPUT_ENDPOINTS_NAME: "http",
+                    AZURE_UNIT.NETWORK_CONFIG_INPUT_ENDPOINTS_LOCAL_PORT: "80"
+                }, {
+                    AZURE_UNIT.NETWORK_CONFIG_INPUT_ENDPOINTS_PROTOCOL: "tcp",
+                    AZURE_UNIT.NETWORK_CONFIG_INPUT_ENDPOINTS_NAME: "remote",
+                    AZURE_UNIT.NETWORK_CONFIG_INPUT_ENDPOINTS_LOCAL_PORT: "3389"
+                }],
+                AZURE_UNIT.NETWORK_CONFIG_CONFIGURATION_SET_TYPE: "NetworkConfiguration"
+            }
+        }
+
+        return dic
 
     def get_name(self):
         return "TODO: name"
