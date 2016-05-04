@@ -43,6 +43,8 @@
          })
     }
 
+    //docker
+
     // create template unit form dynamically
     // data is None: create; empty form
     // data is not None: update; fill data to form
@@ -76,75 +78,8 @@
         return template_unit;
     }
 
-    function createTemplateUnitAzure(data){
-        var templist= $('[data-type="temp-unit-list"]');
-        var template_unit = $($('#template_unit_item_azure').html());
-        if(data){
-            template_unit.find('[name="name"]').val(data['name']);
-            template_unit.find('[name="type"]').val(data['type']);
-            template_unit.find('[name="provider"]').val(data['provider']);
-            template_unit.find('[name="description"]').val(data['description']);
-            template_unit.find('[name="image"]').val(data['Image']);
-            template_unit.find('[name="env"]').val(data['Env'].join(";"));
-            template_unit.find('[name="cmd"]').val(data['Cmd'].join(" "));
-            for(var i = 0; i < data['ports'].length; i++)
-                if(data['ports'][i]['port'] == data['remote']['port']){
-                    template_unit.find('[name="remote-name"]').val(data['ports'][i]['name']);
-                    break;
-                }
-            template_unit.find('[name="remote-provider"]').val(data['remote']['provider']);
-            template_unit.find('[name="remote-protocol"]').val(data['remote']['protocol']);
-            template_unit.find('[name="remote-port"]').val(data['remote']['port']);
-            template_unit.find('[name="remote-username"]').val(data['remote']['username']);
-            template_unit.find('[name="remote-password"]').val(data['remote']['password']);
-            for(var i = 0; i < data['ports'].length; i++)
-                if(data['ports'][i]['port'] != data['remote']['port'])
-                    createPort(template_unit.find('[data-type="port-list"]'), data['ports'][i]);
-        }
-        template_unit.appendTo(templist);
-        addFieldValidate(template_unit);
-        return template_unit;
-    }
-
-    // create port form dynamically
-    // data is None: create; empty form
-    // data is not None: update; fill data to form
-    function createPort(element, data){
-        var portlist= $(element).parents('[data-type="template-unit-group"]').find('[data-type="port-list"]');
-        var port = $($('#port_item').html());
-        if(data){
-            port.find('[name="name"]').val(data['name']);
-            port.find('[name="port"]').val(data['port']);
-            port.find('[name="public"]').val(data['public']);
-            port.find('[name="protocol"]').val(data['protocol']);
-            if('url' in data){
-                var url_protocol = data['url'].substring(0, data['url'].indexOf(":"));
-                port.find('[name="url-protocol"]').val(url_protocol);
-                var url_path = data['url'].substring(data['url'].lastIndexOf("/") + 1, data['url'].length);
-                port.find('[name="url-path"]').val(url_path);
-            }
-        }
-        port.appendTo(portlist);
-        addFieldValidate(port);
-        return port;
-    }
-
-    // delete port form dynamically
-    function deletePort(element, data){
-        $(element).parents('[data-type="port-group"]').detach();
-    }
-
-    // remove empty string produced by split
-    function removeEmptyString(data){
-        var ans = [];
-        for(var i = 0; i < data.length; i++)
-            if(data[i] != '')
-                ans.push(data[i]);
-        return ans;
-    }
-
     // compose PUT/POST data for back end api
-    function getFormData(){
+    function getFormDataDocker(){
         var data = [];
         $('[data-type="template-unit-group"]').each(function(i,group){
             var $group = $(group);
@@ -193,14 +128,197 @@
         };
     }
 
-    // fill data to form
-    function setFormData(item){
+        // fill data to form
+    function setFormDataDocker(item){
         data = item['data']
         $('#name').val(data['expr_name']).attr({disabled:'disabled'});
         $('#description').val(data['description']);
         $('#provider').val(item['provider']).attr({disabled:'disabled'});
         data['virtual_environments'].forEach(createTemplateUnitDocker);
     }
+
+
+    //azure
+
+    function createTemplateUnitAzure(data){
+        // var templist= $('[data-type="temp-unit-list"]');
+        // var template_unit = $($('#template_unit_item_azure').html());
+        // if(data){
+        //     template_unit.find('[name="name"]').val(data['name']);
+        //     template_unit.find('[name="type"]').val(data['type']);
+        //     template_unit.find('[name="provider"]').val(data['provider']);
+        //     template_unit.find('[name="description"]').val(data['description']);
+        //     template_unit.find('[name="image"]').val(data['Image']);
+        //     template_unit.find('[name="env"]').val(data['Env'].join(";"));
+        //     template_unit.find('[name="cmd"]').val(data['Cmd'].join(" "));
+        //     for(var i = 0; i < data['ports'].length; i++)
+        //         if(data['ports'][i]['port'] == data['remote']['port']){
+        //             template_unit.find('[name="remote-name"]').val(data['ports'][i]['name']);
+        //             break;
+        //         }
+        //     template_unit.find('[name="remote-provider"]').val(data['remote']['provider']);
+        //     template_unit.find('[name="remote-protocol"]').val(data['remote']['protocol']);
+        //     template_unit.find('[name="remote-port"]').val(data['remote']['port']);
+        //     template_unit.find('[name="remote-username"]').val(data['remote']['username']);
+        //     template_unit.find('[name="remote-password"]').val(data['remote']['password']);
+        //     for(var i = 0; i < data['ports'].length; i++)
+        //         if(data['ports'][i]['port'] != data['remote']['port'])
+        //             createPort(template_unit.find('[data-type="port-list"]'), data['ports'][i]);
+        // }
+        // template_unit.appendTo(templist);
+        // addFieldValidate(template_unit);
+        // return template_unit;
+    }
+
+    // compose PUT/POST data for back end api
+    function getFormDataAzure(){
+        var data = [];
+        $('[data-type="template-unit-group"]').each(function(i,group){
+            var $group = $(group);
+            var role_size = $group.find('[name="role_size"]').val();
+            var service_name = $group.find('[name="service_name"]').val();
+            var location = $group.find('[name="location"]').val(); //two aspects
+
+            var cloud_service = {
+                service_name: service_name,
+                location: location,
+                label: service_name
+            };
+
+            var image = {
+                type: $group.find('[name="image-type"]').val(),
+                name: $group.find('[name="image-name"]').val()
+            };
+
+            var system_config = {
+                user_name: $group.find('[name="user_name"]').val(),
+                user_password: $group.find('[name="user_password"]').val(),
+                os_family: $group.find('[name="os_family"]').val(),
+                hostname: $group.find('[name="hostname"]').val()
+            };
+
+            var deployment = {
+                deployment_slot: "production",
+                deployment_name: service_name
+            };
+
+            var storage_account = {
+                service_name: "ohpvhds",
+                location: location,
+                url_base: "blob.core.chinacloudapi.cn",
+                description: "storage-description",
+                label: "storage-label"
+            }
+
+            var remote = {
+                input_endpoint_name: "remote",
+                provider: $group.find('[name="remote-provider"]').val(),
+                protocol: $group.find('[name="remote-protocol"]').val()
+            };
+
+            var network_config = {
+                input_endpoint_name: [
+                    {
+                        url: "http://{0}:{1}",
+                        protocol: "tcp",
+                        name: "http",
+                        local_port: 80
+                    }, {
+                        protocol: "tcp",
+                        name: "remote",
+                        local_port: 3389
+                    }
+                ]
+                configuration_set_type: "NetworkConfiguration"
+            };
+
+
+            // var ports = []
+            // ports.push({
+            //     name: $group.find('[name="remote-name"]').val(),
+            //     port: remote['port'],
+            //     public: true,
+            //     protocol: 'tcp'
+            // })
+            // $group.find('[data-type="port-group"]').each(function(i,portgroup){
+            //     var $portgroup = $(portgroup);
+            //     var port = {
+            //         name: $portgroup.find('[name="name"]').val(),
+            //         port: Number($portgroup.find('[name="port"]').val()),
+            //         public: Boolean($portgroup.find('[name="public"]').val()),
+            //         protocol: $portgroup.find('[name="protocol"]').val()
+            //     }
+            //     if($portgroup.find('[name="url-protocol"]').val().length > 0)
+            //         port['url'] = $portgroup.find('[name="url-protocol"]').val() + '://{0}:{1}/' + $portgroup.find('[name="url-path"]').val()
+            //     ports.push(port)
+            // })
+            data.push({
+                role_size: $group.find('[name="role_size"]').val(),
+                cloud_service: cloud_service,
+                image: image,
+                label: service_name,
+                role_name: service_name,
+                system_config: system_config,
+                deployment: deployment,
+                storage_account: storage_account,
+                remote: remote,
+                network_config: network_config
+            })
+        });
+
+        return {
+            name: $('#name').val(),
+            description: $('#description').val(),
+            virtual_environments: data
+        };
+    }
+
+    // fill data to form
+    function setFormDataAzure(item){
+        data = item['data']
+        $('#name').val(data['expr_name']).attr({disabled:'disabled'});
+        $('#description').val(data['description']);
+        $('#provider').val(item['provider']).attr({disabled:'disabled'});
+        data['virtual_environments'].forEach(createTemplateUnitDocker);
+    }
+
+    // create port form dynamically
+    // data is None: create; empty form
+    // data is not None: update; fill data to form
+    function createPort(element, data){
+        var portlist= $(element).parents('[data-type="template-unit-group"]').find('[data-type="port-list"]');
+        var port = $($('#port_item').html());
+        if(data){
+            port.find('[name="name"]').val(data['name']);
+            port.find('[name="port"]').val(data['port']);
+            port.find('[name="public"]').val(data['public']);
+            port.find('[name="protocol"]').val(data['protocol']);
+            if('url' in data){
+                var url_protocol = data['url'].substring(0, data['url'].indexOf(":"));
+                port.find('[name="url-protocol"]').val(url_protocol);
+                var url_path = data['url'].substring(data['url'].lastIndexOf("/") + 1, data['url'].length);
+                port.find('[name="url-path"]').val(url_path);
+            }
+        }
+        port.appendTo(portlist);
+        addFieldValidate(port);
+        return port;
+    }
+
+    // delete port form dynamically
+    function deletePort(element, data){
+        $(element).parents('[data-type="port-group"]').detach();
+    }
+
+    // remove empty string produced by split
+    function removeEmptyString(data){
+        var ans = [];
+        for(var i = 0; i < data.length; i++)
+            if(data[i] != '')
+                ans.push(data[i]);
+        return ans;
+    }
+
 
     // PUT to update
     function updateTemplate(data){
@@ -237,7 +355,7 @@
         var templateform = $('#templateform');
         templateform.bootstrapValidator().on('success.form.bv', function(e) {
             e.preventDefault();
-            var formData = getFormData();
+            var formData = getFormDataDocker();
             (is_update ? updateTemplate(formData) : createTemplate(formData)).then(function(){
                 if(is_update)
                     is_update = false;
@@ -257,7 +375,7 @@
             createTemplateUnitDocker();
         });
 
-        var add_template_unit_docker = $('#btn_add_template_unit_azure').click(function(e){
+        var add_template_unit_azure= $('#btn_add_template_unit_azure').click(function(e){
             createTemplateUnitAzure();
         });
 
