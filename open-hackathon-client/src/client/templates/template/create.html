@@ -70,7 +70,14 @@
 
                         <div class="form-group has-feedback">
                             <div class="col-sm-offset-3 col-sm-6 text-center">
-                                <button type="button" class="btn btn-default" id="btn_add_template_unit"> 添加模板单元
+                                <button type="button" class="btn btn-default" id="btn_add_template_unit_docker"> 添加Docker模板单元(ubuntu)
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="form-group has-feedback">
+                            <div class="col-sm-offset-3 col-sm-6 text-center">
+                                <button type="button" class="btn btn-default" id="btn_add_template_unit_azure"> 添加Azure模板单元(Windows)
                                 </button>
                             </div>
                         </div>
@@ -93,7 +100,7 @@
 {% endblock %}
 
 {% block script %}
-<script id="template_unit_item" type="text/x-jquery-tmpl">
+<script id="template_unit_item_docker" type="text/x-jquery-tmpl">
     <div data-type="template-unit-group">
         <legend></legend>
         <div class="form-group has-feedback">
@@ -241,10 +248,147 @@
             </div>
         </div>
     </div>
-
-
-
 </script>
+
+
+
+<script id="template_unit_item_azure" type="text/x-jquery-tmpl">
+    <div data-type="template-unit-group">
+        <legend></legend>
+        <div class="form-group has-feedback">
+            <label class="col-md-3 control-label">service_name</label>
+            <div class="col-md-6 register">
+                <input type="text" class="form-control" name="name" data-validate="true"
+                    placeholder="请使用英文字母、数字和'_'（下划线）'-'(中划线)"
+                    data-bv-trigger="blur"
+                    required
+                    data-bv-notempty-message="名称是必需的，不能为空"
+                    pattern="^(?!_)(?!.*?_$)[a-zA-Z0-9_-]+$"
+                    data-bv-regexp-message="模板单元名称只能由英文字母的，数字和下划线"
+                    minlength="3"
+                    data-bv-stringlength-message="模板单元名称必须至少有3个字符"
+                    >
+            </div>
+            <button type="button" class="btn btn-danger" data-type="btn_delete_template_unit"> 删除该模板单元</button>
+        </div>
+        <div class="form-group has-feedback">
+            <label class="col-md-3 control-label">提供商</label>
+            <div class="col-md-6 register">
+                <select class="form-control" name="provider">
+                    <option value="0">Docker</option>
+                    <option value="1">Azure</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group has-feedback">
+            <label class="col-md-3 control-label">role_size</label>
+            <div class="col-md-6 register">
+                <select class="form-control" name="role_size">
+                    <option value="ExtraSmall">ExtraSmall</option>
+                    <option value="Small">Small</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Large">Large</option>
+                    <option value="ExtraLarge">ExtraLarge</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group has-feedback">
+            <label class="col-md-3 control-label">location</label>
+            <div class="col-md-6 register">
+                <select class="form-control" name="location">
+                    <option value="China East">China East</option>
+                    <option value="China South">China South</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group has-feedback">
+            <label class="col-md-3 control-label">image-type</label>
+            <div class="col-md-6 register">
+                <select class="form-control" name="image-type">
+                    <option value="os">os</option>
+                    <option value="vm">vm</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group has-feedback">
+            <label class="col-md-3 control-label">system_config-os_family</label>
+            <div class="col-md-6 register">
+                <select class="form-control" name="system_config-os_family">
+                    <option value="Windows">Windows</option>
+                    <option value="Linux">Linux</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group has-feedback">
+            <label class="col-md-3 control-label">system_config-hostname</label>
+            <div class="col-md-6 register">
+                <input type="text" class="form-control" name="system_config-hostname" data-validate="true"
+                    data-bv-trigger="blur"
+                    required
+                    data-bv-notempty-message="system_config-hostname是必需的，不能为空"
+                    >
+            </div>
+        </div>
+        <div class="form-group has-feedback">
+            <label class="col-md-3 control-label">image-name</label>
+            <div class="col-md-6 register">
+                <input type="text" class="form-control" name="image-name" data-validate="true"
+                    data-bv-trigger="blur"
+                    required
+                    data-bv-notempty-message="image-name是必需的，不能为空"
+                    >
+            </div>
+        </div>
+        <div class="form-group has-feedback">
+            <label class="col-md-3 control-label">system_config-user_name</label>
+            <div class="col-md-6 register">
+                <input type="text" class="form-control" name="system_config-user_name" data-validate="true"
+                    data-bv-trigger="blur"
+                    required
+                    data-bv-notempty-message="system_config-user_name是必需的，不能为空"
+                    >
+            </div>
+        </div>
+        <div class="form-group has-feedback">
+            <label class="col-md-3 control-label">system_config-user_password</label>
+            <div class="col-md-6 register">
+                <input type="text" class="form-control" name="system_config-user_password" data-validate="true"
+                    data-bv-trigger="blur"
+                    required
+                    data-bv-notempty-message="system_config-user_password是必需的，不能为空"
+                    >
+            </div>
+        </div>
+        <div class="form-group has-feedback">
+            <label class="col-md-3 control-label">remote-protocol</label>
+            <div class="col-md-6 register">
+                <select class="form-control" name="remote-protocol">
+                    <option value="ssh">ssh</option>
+                    <option value="vnc">vnc</option>
+                    <option value="rdp">rdp</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group has-feedback">
+            <label class="col-md-3 control-label">remote-provider</label>
+            <div class="col-md-6 register">
+                <select class="form-control" name="remote-provider">
+                    <option value="guacamole">guacamole</option>
+                </select>
+            </div>
+        </div>
+        <div data-type="port-list">
+        </div>
+        <div class="form-group has-feedback">
+            <div class="col-sm-offset-3 col-sm-6 text-center">
+                <button type="button" class="btn btn-default" data-type="btn_add_port"> 添加端口</button>
+            </div>
+        </div>
+    </div>
+</script>
+
+
+
 <script id="port_item" type="text/x-jquery-tmpl">
     <div data-type="port-group">
         <hr />

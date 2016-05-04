@@ -46,9 +46,39 @@
     // create template unit form dynamically
     // data is None: create; empty form
     // data is not None: update; fill data to form
-    function createTemplateUnit(data){
+    function createTemplateUnitDocker(data){
         var templist= $('[data-type="temp-unit-list"]');
-        var template_unit = $($('#template_unit_item').html());
+        var template_unit = $($('#template_unit_item_docker').html());
+        if(data){
+            template_unit.find('[name="name"]').val(data['name']);
+            template_unit.find('[name="type"]').val(data['type']);
+            template_unit.find('[name="provider"]').val(data['provider']);
+            template_unit.find('[name="description"]').val(data['description']);
+            template_unit.find('[name="image"]').val(data['Image']);
+            template_unit.find('[name="env"]').val(data['Env'].join(";"));
+            template_unit.find('[name="cmd"]').val(data['Cmd'].join(" "));
+            for(var i = 0; i < data['ports'].length; i++)
+                if(data['ports'][i]['port'] == data['remote']['port']){
+                    template_unit.find('[name="remote-name"]').val(data['ports'][i]['name']);
+                    break;
+                }
+            template_unit.find('[name="remote-provider"]').val(data['remote']['provider']);
+            template_unit.find('[name="remote-protocol"]').val(data['remote']['protocol']);
+            template_unit.find('[name="remote-port"]').val(data['remote']['port']);
+            template_unit.find('[name="remote-username"]').val(data['remote']['username']);
+            template_unit.find('[name="remote-password"]').val(data['remote']['password']);
+            for(var i = 0; i < data['ports'].length; i++)
+                if(data['ports'][i]['port'] != data['remote']['port'])
+                    createPort(template_unit.find('[data-type="port-list"]'), data['ports'][i]);
+        }
+        template_unit.appendTo(templist);
+        addFieldValidate(template_unit);
+        return template_unit;
+    }
+
+    function createTemplateUnitAzure(data){
+        var templist= $('[data-type="temp-unit-list"]');
+        var template_unit = $($('#template_unit_item_azure').html());
         if(data){
             template_unit.find('[name="name"]').val(data['name']);
             template_unit.find('[name="type"]').val(data['type']);
@@ -169,7 +199,7 @@
         $('#name').val(data['expr_name']).attr({disabled:'disabled'});
         $('#description').val(data['description']);
         $('#provider').val(item['provider']).attr({disabled:'disabled'});
-        data['virtual_environments'].forEach(createTemplateUnit);
+        data['virtual_environments'].forEach(createTemplateUnitDocker);
     }
 
     // PUT to update
@@ -223,9 +253,13 @@
             deletePort(this);
         });
 
-        var add_template_unit = $('#btn_add_template_unit').click(function(e){
-            createTemplateUnit();
-        })
+        var add_template_unit_docker = $('#btn_add_template_unit_docker').click(function(e){
+            createTemplateUnitDocker();
+        });
+
+        var add_template_unit_docker = $('#btn_add_template_unit_azure').click(function(e){
+            createTemplateUnitAzure();
+        });
 
         templateform.on('click','[data-type="btn_delete_template_unit"]',function(e){
             deleteTemplateUnit(this);
@@ -234,14 +268,14 @@
         $('[data-type="template_item_add"]').click(function(e){
             $('#name').removeAttr('disabled');
             $('#provider').removeAttr('disabled');
-            createTemplateUnit();
+            createTemplateUnitDocker();
         });
 
     }
 
     $(function() {
         init();
-        createTemplateUnit();
+        // createTemplateUnitDocker();
     })
 
 })(window.jQuery,window.oh);
