@@ -128,7 +128,7 @@
         };
     }
 
-        // fill data to form
+    // fill data to form
     function setFormDataDocker(item){
         data = item['data']
         $('#name').val(data['expr_name']).attr({disabled:'disabled'});
@@ -139,10 +139,9 @@
 
 
     //azure
-
     function createTemplateUnitAzure(data){
-        // var templist= $('[data-type="temp-unit-list"]');
-        // var template_unit = $($('#template_unit_item_azure').html());
+        var templist= $('[data-type="temp-unit-list"]');
+        var template_unit = $($('#template_unit_item_azure').html());
         // if(data){
         //     template_unit.find('[name="name"]').val(data['name']);
         //     template_unit.find('[name="type"]').val(data['type']);
@@ -165,9 +164,9 @@
         //         if(data['ports'][i]['port'] != data['remote']['port'])
         //             createPort(template_unit.find('[data-type="port-list"]'), data['ports'][i]);
         // }
-        // template_unit.appendTo(templist);
-        // addFieldValidate(template_unit);
-        // return template_unit;
+        template_unit.appendTo(templist);
+        addFieldValidate(template_unit);
+        return template_unit;
     }
 
     // compose PUT/POST data for back end api
@@ -191,10 +190,10 @@
             };
 
             var system_config = {
-                user_name: $group.find('[name="user_name"]').val(),
-                user_password: $group.find('[name="user_password"]').val(),
-                os_family: $group.find('[name="os_family"]').val(),
-                hostname: $group.find('[name="hostname"]').val()
+                user_name: $group.find('[name="system_config-user_name"]').val(),
+                user_password: $group.find('[name="system_config-user_password"]').val(),
+                os_family: $group.find('[name="system_config-os_family"]').val(),
+                hostname: $group.find('[name="system_config-hostname"]').val()
             };
 
             var deployment = {
@@ -203,7 +202,7 @@
             };
 
             var storage_account = {
-                service_name: "ohpvhds",
+                service_name: "ohpvhds", //or use service_name
                 location: location,
                 url_base: "blob.core.chinacloudapi.cn",
                 description: "storage-description",
@@ -216,6 +215,7 @@
                 protocol: $group.find('[name="remote-protocol"]').val()
             };
 
+            //TODO remove hardcode
             var network_config = {
                 input_endpoint_name: [
                     {
@@ -228,7 +228,7 @@
                         name: "remote",
                         local_port: 3389
                     }
-                ]
+                ],
                 configuration_set_type: "NetworkConfiguration"
             };
 
@@ -253,6 +253,7 @@
             //     ports.push(port)
             // })
             data.push({
+                provider: $group.find('[name="provider"]').val(),
                 role_size: $group.find('[name="role_size"]').val(),
                 cloud_service: cloud_service,
                 image: image,
@@ -346,6 +347,13 @@
         })
     }
 
+
+    function getFormData() {
+        // TODO: check different data
+        // return getFormDataDocker();
+        return getFormDataAzure();
+    }
+
     // delete template unit form dynamically
     function deleteTemplateUnit(element, data){
         $(element).parents('[data-type="template-unit-group"]').detach();
@@ -355,7 +363,7 @@
         var templateform = $('#templateform');
         templateform.bootstrapValidator().on('success.form.bv', function(e) {
             e.preventDefault();
-            var formData = getFormDataDocker();
+            var formData = getFormData();
             (is_update ? updateTemplate(formData) : createTemplate(formData)).then(function(){
                 if(is_update)
                     is_update = false;
@@ -363,6 +371,7 @@
             })
         });
 
+        //add or delete port(docker or azure)
         templateform.on('click','[data-type="btn_add_port"]',function(e){
             createPort(this);
         });
@@ -371,23 +380,26 @@
             deletePort(this);
         });
 
+        //add docker template
         var add_template_unit_docker = $('#btn_add_template_unit_docker').click(function(e){
             createTemplateUnitDocker();
         });
 
+        //add azure template
         var add_template_unit_azure= $('#btn_add_template_unit_azure').click(function(e){
             createTemplateUnitAzure();
         });
 
+        //delete current template(docker or azure)
         templateform.on('click','[data-type="btn_delete_template_unit"]',function(e){
             deleteTemplateUnit(this);
         });
 
-        $('[data-type="template_item_add"]').click(function(e){
-            $('#name').removeAttr('disabled');
-            $('#provider').removeAttr('disabled');
-            createTemplateUnitDocker();
-        });
+        // $('[data-type="template_item_add"]').click(function(e){
+        //     $('#name').removeAttr('disabled');
+        //     $('#provider').removeAttr('disabled');
+        //     createTemplateUnitDocker();
+        // });
 
     }
 
