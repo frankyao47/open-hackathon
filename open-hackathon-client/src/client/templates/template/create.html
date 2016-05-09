@@ -63,6 +63,16 @@
                             </div>
                         </div>
 
+                        <div class="form-group has-feedback">
+                            <label class="col-md-3 control-label">提供商</label>
+                            <div class="col-md-6 register">
+                                <select class="form-control" name="provider" id="provider">
+                                    <option value="0">Docker</option>
+                                    <option value="1">Azure</option>
+                                </select>
+                            </div>
+                        </div>
+
                         <div data-type="temp-unit-list">
                         </div>
 
@@ -70,14 +80,7 @@
 
                         <div class="form-group has-feedback">
                             <div class="col-sm-offset-3 col-sm-6 text-center">
-                                <button type="button" class="btn btn-default" id="btn_add_template_unit_docker"> 添加Docker模板单元(ubuntu)
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="form-group has-feedback">
-                            <div class="col-sm-offset-3 col-sm-6 text-center">
-                                <button type="button" class="btn btn-default" id="btn_add_template_unit_azure"> 添加Azure模板单元(Windows)
+                                <button type="button" class="btn btn-default" id="btn_add_template_unit">添加模板单元
                                 </button>
                             </div>
                         </div>
@@ -86,7 +89,7 @@
 
                         <div class="form-group has-feedback">
                             <div class="col-sm-offset-3 col-sm-6 text-center">
-                                <button type="button" class="btn btn btn-default" data-type="cancel"> 取消</button>
+                                <button type="button" class="btn btn btn-default" data-type="cancel">取消</button>
                                 <button type="submit" class="btn btn-primary">提交</button>
                             </div>
                         </div>
@@ -118,15 +121,6 @@
                     >
             </div>
             <button type="button" class="btn btn-danger" data-type="btn_delete_template_unit"> 删除该模板单元</button>
-        </div>
-        <div class="form-group has-feedback">
-            <label class="col-md-3 control-label">提供商</label>
-            <div class="col-md-6 register">
-                <select class="form-control" name="provider">
-                    <option value="0">Docker</option>
-                    <option value="1">Azure</option>
-                </select>
-            </div>
         </div>
         <div class="form-group has-feedback">
             <label class="col-md-3 control-label">系统类型</label>
@@ -272,23 +266,13 @@
             <button type="button" class="btn btn-danger" data-type="btn_delete_template_unit"> 删除该模板单元</button>
         </div>
         <div class="form-group has-feedback">
-            <label class="col-md-3 control-label">提供商</label>
-            <div class="col-md-6 register">
-                <select class="form-control" name="provider">
-                    <option value="0">Docker</option>
-                    <option value="1">Azure</option>
-                </select>
-            </div>
-        </div>
-        <div class="form-group has-feedback">
             <label class="col-md-3 control-label">role_size</label>
             <div class="col-md-6 register">
                 <select class="form-control" name="role_size">
-                    <option value="ExtraSmall">ExtraSmall</option>
                     <option value="Small">Small</option>
                     <option value="Medium">Medium</option>
                     <option value="Large">Large</option>
-                    <option value="ExtraLarge">ExtraLarge</option>
+                    <option value="Extra Large">ExtraLarge</option>
                 </select>
             </div>
         </div>
@@ -297,7 +281,7 @@
             <div class="col-md-6 register">
                 <select class="form-control" name="location">
                     <option value="China East">China East</option>
-                    <option value="China South">China South</option>
+                    <option value="China North">China North</option>
                 </select>
             </div>
         </div>
@@ -455,7 +439,6 @@
             </div>
         </div>
     </div>
-
 
 </script>
 <script type="text/javascript" src="/static/js/jquery/bootstrapValidator.js"></script>
